@@ -1,2 +1,5 @@
 
 node_modules
+
+## env file on ignore mode
+.env
