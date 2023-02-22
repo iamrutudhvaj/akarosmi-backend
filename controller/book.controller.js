@@ -1,26 +1,27 @@
 const Book = require("../model/book.model");
 
+
 // ---------- Start  Add API For Book ---------- //
 exports.add = async (req, res) => {
     try {
-
+        const name = req.body;
+        console.log("::name:",name);
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-        let randomCode = "";
+        let bookId = "";
         for (let i = 1; i <= 6; i++) {
             const nCode = Math.floor(Math.random() * 36);
-            randomCode += chars[nCode];
+            bookId += chars[nCode];
         }
+
         const userID = req.user._id
         const insertBookData = new Book({
-            bookId: randomCode,
+            bookId: bookId,
             userId: userID,
             name: req.body.name,
             author: req.body.author,
             publisher: req.body.publisher,
-            images: req.body.images,
-            thumbnail: req.body.thumbnail
 
-        })
+        })  
 
         const saveData = await insertBookData.save();
         console.log("::saveData::", saveData);
@@ -66,7 +67,7 @@ exports.edit = async (req, res) => {
         res.status(200).json({
             message: "BOOK DATA UPDATED",
             status: 200,
-            data : updateBookData
+            data: updateBookData
         })
 
     } catch (error) {
@@ -117,9 +118,9 @@ exports.listByUserId = async (req, res) => {
         console.log("::userFind::", userFind);
 
         res.status(200).json({
-            message : "LIST USER ID",
-            status : 200,
-            data : userFind
+            message: "LIST USER ID",
+            status: 200,
+            data: userFind
         })
 
     } catch (error) {
@@ -129,5 +130,5 @@ exports.listByUserId = async (req, res) => {
             status: 500
         })
     }
-} 
+}
 // ---------- End User Id list API For Book ---------- //

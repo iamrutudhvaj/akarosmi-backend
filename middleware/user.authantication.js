@@ -6,10 +6,10 @@ exports.verify = async (req, res, next) => {
     try {
         const Token = req.headers['authorization'];
 
-
         if (Token) {
             const decoded = jwt.verify(Token, process.env.USER_AUTH_TOKEN);
             const data = await user.findById({ _id: decoded._id });
+
             if (data) {
                 req.user = data
                 if (Token == data.token) {

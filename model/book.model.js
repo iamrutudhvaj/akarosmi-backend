@@ -22,7 +22,7 @@ const bookSchema = new mongoose.Schema({
         require: true
     },
     images: {
-        type : String,
+        type : mongoose.Schema.Types.Array,
         require : true
     },
     thumbnail: {
