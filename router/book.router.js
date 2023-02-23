@@ -16,5 +16,3 @@ router.delete("/delete/:id", bookDelete );
 router.get("/list-by-user", verify ,  listByUserId);
 
 module.exports = router;
-
-// upload.array('images') , upload.single('thumbnail') ,

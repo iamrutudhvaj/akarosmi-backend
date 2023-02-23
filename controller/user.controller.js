@@ -17,34 +17,42 @@ exports.registration = async (req, res) => {
                 const nCode = Math.floor(Math.random() * 36);
                 uniqueId += chars[nCode];
             }
-            const pass = Math.floor(Math.random() * 1000000);
+            const pass = (Math.floor(Math.random() * 1000000)).toString();
             console.log("pass::", pass);
 
-            const insertUserData = new User({
-                uid: uniqueId,
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                date: req.body.date,
-                gender: req.body.gender,
-                phone_code: req.body.phone_code,
-                phone_number: req.body.phone_number,
-                email: email,
-                password: pass
-            })
-            const saveData = await insertUserData.save();
+            const phone = req.body.phone_number
 
-            const message = `Your Tempopary Password is :-   ${pass}`;
-            await sendEmail(email, "USER: Verify Code", message);
+            if (phone.length < 10) {
+                res.status(401).json({
+                    message: "PHONE NUMBER MUST BE 10 DIGIT",
+                    status: 401
+                })
+            } else {
+                const insertUserData = new User({
+                    uid: uniqueId,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    date: req.body.date,
+                    gender: req.body.gender,
+                    phone_code: req.body.phone_code,
+                    phone_number: phone,
+                    email: email,
+                    password: pass
+                })
+                const saveData = await insertUserData.save();
 
-            res.status(201).json({
-                message: "USER DATA INSERT SUCCESSFULLY",
-                status: 201,
-                data: saveData
-            })
+                const message = `Your Tempopary Password is :-   ${pass}`;
+                await sendEmail(email, "USER: Verify Code", message);
+
+                res.status(201).json({
+                    message: "Your registration is successfully done. You will receive Your Password on registered email.",
+                    status: 201
+                })
+            }
 
         } else {
             res.status(401).json({
-                message: "EMAIL ALREADY EXITST",
+                message: "PLEASE ENTER VALID EMAIL",
                 status: 401
             })
         }
@@ -125,7 +133,7 @@ exports.forgetPassword = async (req, res) => {
                 status: 400
             })
         } else {
-            const pass = Math.floor(Math.random() * 1000000);
+            const pass = (Math.floor(Math.random() * 1000000)).toString();
             const bcryptPassword = await bcrypt.hash(pass.toString(), 10);
 
             const token = await findEmail.generateauthtoken();
@@ -168,11 +176,10 @@ exports.changePassword = async (req, res) => {
     try {
 
         const data = req.user;
-
         const oldPass = req.body.oldPass;
         const userPass = data.password;
 
-        const oldComparePass = await bcrypt.compare(oldPass, userPass);
+        const oldComparePass = await bcrypt.compare(oldPass, userPass.toString());
 
         if (oldComparePass == true) {
 
