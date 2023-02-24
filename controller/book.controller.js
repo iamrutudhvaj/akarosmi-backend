@@ -1,11 +1,13 @@
 const Book = require("../model/book.model");
+const User = require("../model/user.model");
+const cloudinary = require("../utils/cloudinary.util");
+const bcrypt = require("bcrypt");
 
 
-// ---------- Start  Add API For Book ---------- //
+// ----------  Add API For Book ---------- //
 exports.add = async (req, res) => {
     try {
-        const name = req.body;
-        console.log("::name:",name);
+        /* For Generating UInique Code */
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         let bookId = "";
         for (let i = 1; i <= 6; i++) {
@@ -13,26 +15,37 @@ exports.add = async (req, res) => {
             bookId += chars[nCode];
         }
 
-        const userID = req.user._id
-        const insertBookData = new Book({
-            bookId: bookId,
-            userId: userID,
-            name: req.body.name,
-            author: req.body.author,
-            publisher: req.body.publisher,
+        const data = req.user;
+        const { name, author, publisher } = req.body;
+        const findBook = await Book.find({ name: name });
 
-        })  
+        if (findBook.length == 0) {
+            const insertData = new Book({
+                bookId: bookId,
+                userId: data._id,
+                name: name,
+                author: author,
+                publisher: publisher,
+            })
+            const saveData = await insertData.save();
 
-        const saveData = await insertBookData.save();
-        console.log("::saveData::", saveData);
+            res.status(201).json({
+                message: "BOOK DATA INSERT SUCESSFULLY",
+                status: 201,
+                data: saveData
+            })
 
-        res.status(201).json({
-            message: "BOOK DATA INSERT SUCESSFULLY",
-            status: 201
-        })
+        } else {
+
+            res.status(409).json({
+                message: "BOOK NAME ALREADY EXIST",
+                status: 409,
+            })
+
+        }
 
     } catch (error) {
-        console.log("  ERROR__:: ", error);
+        console.log("bookAdd-Error:", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -42,36 +55,32 @@ exports.add = async (req, res) => {
 // ---------- End  Add API For Book ---------- //
 
 
-// ---------- Start  Edit API For Book ---------- //
+// ----------  Edit API For Book ---------- //
 exports.edit = async (req, res) => {
     try {
-        const BookId = req.params.id
-        console.log("::BookId::", BookId);
+        const BookId = req.params.id;
+        const data = req.user;
 
-        const updateBookData = await Book.findByIdAndUpdate(
+        const updateBookData = await Book.updateOne(
             {
-                _id: BookId
+                bookId: BookId,
+                userId: data._id
             },
             {
                 name: req.body.name,
                 author: req.body.author,
-                images: req.body.images,
                 publisher: req.body.publisher
             },
             {
                 new: true
-            })
-
-        console.log("::updateBookData::", updateBookData);
-
+            });
         res.status(200).json({
             message: "BOOK DATA UPDATED",
-            status: 200,
-            data: updateBookData
+            status: 200
         })
 
     } catch (error) {
-        console.log("::ERROR__:: ", error);
+        console.log("editBook--Error::", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -81,24 +90,34 @@ exports.edit = async (req, res) => {
 // ---------- End  Edit API For Book ---------- //
 
 
-// ---------- Start Book Delete API For Book ---------- //
+// ---------- Book Delete API For Book ---------- //
 exports.bookDelete = async (req, res) => {
     try {
-        const BookId = req.params.id
-        console.log("::BookId::", BookId);
+        const BookId = req.params.id;
+        const password = req.body.password;
+        const id = req.user._id;
 
-        const deletedBookData = await Book.findByIdAndDelete(
-            {
-                _id: BookId
+        const getUser = await User.findOne({ _id: id });
+
+        const comparePass = await bcrypt.compare(password, getUser.password);
+        if (comparePass == true) {
+            const deletedBookData = await Book.deleteOne(
+                {
+                    bookId: BookId
+                }
+            );
+            res.status(200).json({
+                message: "BOOK DATA DELETED",
+                status: 200
             })
-
-        res.status(200).json({
-            message: "BOOK DATA DELETED",
-            status: 200
-        })
-
+        } else {
+            res.status(401).json({
+                message: "PASSWORD INCORRECT",
+                status: 401
+            })
+        }
     } catch (error) {
-        console.log("::ERROR__:: ", error);
+        console.log("bookDelete--Error::", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -108,20 +127,22 @@ exports.bookDelete = async (req, res) => {
 // ---------- End Book Delete API For Book ---------- //
 
 
-// ---------- Start User Id list API For Book ---------- //
-exports.listByUserId = async (req, res) => {
+// ---------- User Id list API For Book ---------- //
+exports.bookListByUser = async (req, res) => {
     try {
-        const userData = req.user.id
-        console.log("::userData::", userData);
+        const id = req.user.id
+        const page = req.body.page;
+        const limit = req.body.limit;
 
-        const userFind = await Book.findOne({ userId: userData });
-        console.log("::userFind::", userFind);
+        const getBook = await Book.find({ userId: id }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({
-            message: "LIST USER ID",
+            message: "GET ALL BOOK BY USER",
             status: 200,
-            data: userFind
-        })
+            page: page,
+            size: limit,
+            data: getBook
+        });
 
     } catch (error) {
         console.log("::ERROR__:: ", error);
@@ -132,3 +153,101 @@ exports.listByUserId = async (req, res) => {
     }
 }
 // ---------- End User Id list API For Book ---------- //
+
+
+// ---------- Image Upload ---------- //
+exports.imageUpload = async (req, res) => {
+    try {
+
+        const cloudinaryImageUploadMethod = async file => {
+            return new Promise(resolve => {
+                cloudinary.uploader.upload(file, (err, res) => {
+                    if (err) return err
+                    resolve({
+                        res: res.secure_url
+                    })
+                }
+                )
+            })
+        }
+
+        const urls = []
+        const files = req.files;
+
+        for (const file of files) {
+            const { path } = file
+            console.log("path::", path);
+
+            const newPath = await cloudinaryImageUploadMethod(path)
+            urls.push(newPath)
+        }
+
+        const id = req.user._id;
+        const bookId = req.params.bookId;
+
+        console.log("ids::--", id, bookId);
+
+        const ImageUpdate = await Book.updateOne(
+            {
+                userId: id,
+                bookId: bookId
+            }, {
+            $set: {
+                images: urls
+            }
+        }, {
+            new: true,
+            useFindAndModify: false
+        })
+
+        res.status(200).json({
+            message: "IMAGE UPLOADING SUCCESSFULLY",
+            status: 200,
+            data: urls
+        })
+
+    } catch (error) {
+        console.log("imageUpload-Error:", error);
+        res.status(500).json({
+            message: "SOMETHING WENT WRONG",
+            status: 500
+        })
+    }
+}
+// ---------- End Image Upload ---------- //
+
+
+// ---------- Image Remove ---------- //
+exports.removeImage = async (req, res) => {
+    try {
+
+        const id = req.user._id;
+        const bookId = req.params.bookId;
+
+        const ImageUpdate = await Book.updateOne(
+            {
+                userId: id,
+                bookId: bookId
+            }, {
+            $set: {
+                images: " "
+            }
+        }, {
+            new: true,
+            useFindAndModify: false
+        })
+
+        res.status(200).json({
+            message: "IMAGE REMOVE SUCCESSFULLY",
+            status: 200
+        })
+
+    } catch (error) {
+        console.log("removeImage-Error:", error);
+        res.status(500).json({
+            message: "SOMETHING WENT WRONG",
+            status: 500
+        })
+    }
+}
+// ---------- End Image Remove ---------- //

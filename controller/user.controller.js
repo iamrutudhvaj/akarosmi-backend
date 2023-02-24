@@ -6,8 +6,9 @@ const sendEmail = require("../helper/mail.code");
 // ---------- Start Registration API For User ---------- //
 exports.registration = async (req, res) => {
     try {
-        const email = req.body.email
+        const email = req.body.email;
         const checkEmail = await User.findOne({ email });
+        console.log("checkEmail::", checkEmail, email);
 
         if (checkEmail == null) {
 
@@ -18,9 +19,7 @@ exports.registration = async (req, res) => {
                 uniqueId += chars[nCode];
             }
             const pass = (Math.floor(Math.random() * 1000000)).toString();
-            console.log("pass::", pass);
-
-            const phone = req.body.phone_number
+            const phone = req.body.phone_number;
 
             if (phone.length < 10) {
                 res.status(401).json({
@@ -46,7 +45,8 @@ exports.registration = async (req, res) => {
 
                 res.status(201).json({
                     message: "Your registration is successfully done. You will receive Your Password on registered email.",
-                    status: 201
+                    status: 201,
+                    data: saveData
                 })
             }
 
