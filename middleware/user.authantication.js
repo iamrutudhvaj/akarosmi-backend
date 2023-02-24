@@ -9,9 +9,9 @@ exports.verify = async (req, res, next) => {
         if (Token) {
 
             const decoded = jwt.verify(Token, process.env.USER_AUTH_TOKEN);
-            console.log("decoded:::", decoded);
+            // console.log("decoded:::", decoded);
             const data = await user.findById({ _id: decoded._id });
-            console.log("data::", data);
+            // console.log("data::", data);
 
             if (data) {
 

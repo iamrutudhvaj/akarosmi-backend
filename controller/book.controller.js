@@ -52,7 +52,7 @@ exports.add = async (req, res) => {
         })
     }
 }
-// ---------- End  Add API For Book ---------- //
+// ---------- End Add API For Book ---------- //
 
 
 // ----------  Edit API For Book ---------- //
@@ -176,7 +176,6 @@ exports.imageUpload = async (req, res) => {
 
         for (const file of files) {
             const { path } = file
-            console.log("path::", path);
 
             const newPath = await cloudinaryImageUploadMethod(path)
             urls.push(newPath)
@@ -185,14 +184,13 @@ exports.imageUpload = async (req, res) => {
         const id = req.user._id;
         const bookId = req.params.bookId;
 
-        console.log("ids::--", id, bookId);
-
         const ImageUpdate = await Book.updateOne(
             {
                 userId: id,
                 bookId: bookId
             }, {
             $set: {
+                thumbnail: urls[0].res,
                 images: urls
             }
         }, {
