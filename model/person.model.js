@@ -33,9 +33,7 @@ const personSchema = new mongoose.Schema({
 }, {
     timestamps: true
 }, {
-    collection: 'person'
+    collection: 'persons'
 });
-
-
 
 module.exports = mongoose.model('person', personSchema);

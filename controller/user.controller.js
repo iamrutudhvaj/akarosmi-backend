@@ -65,7 +65,7 @@ exports.registration = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log("registration-ERROR__:: ", error);
+        console.log("User_Registration--ERROR__:: ", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -118,7 +118,7 @@ exports.login = async (req, res) => {
 
         }
     } catch (error) {
-        console.log("login-ERROR__:: ", error);
+        console.log("UserLogin--ERROR:: ", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -167,7 +167,7 @@ exports.forgetPassword = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log("forgetPassword-ERROR__:: ", error);
+        console.log("UserForgetPassword--ERROR:: ", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -232,7 +232,7 @@ exports.changePassword = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log("changePassword-ERROR__:: ", error);
+        console.log("UserchangePassword--ERROR:: ", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500

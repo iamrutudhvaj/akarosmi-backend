@@ -13,9 +13,11 @@ app.use(express.urlencoded({ extended: false }));
 const userRouter = require("./router/user.router");
 const bookRouter = require("./router/book.router");
 const personRouter = require("./router/person.router");
+const transactionRouter = require("./router/transaction.router");
 app.use("/user", userRouter);
 app.use("/book", bookRouter);
-app.use("/person", personRouter)
+app.use("/person", personRouter);
+app.use("/transaction", transactionRouter);
 
 app.listen(port, () => {
     console.log("===============================================");

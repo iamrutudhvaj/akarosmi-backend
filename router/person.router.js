@@ -8,10 +8,10 @@ const {
     listByUserId
 } = require("../controller/person.controller");
 
-router.post("/add",  verify , add);
-router.put("/edit/:personId", verify ,  edit);
-router.delete("/delete/:personId", verify ,  deleteData);
-router.get("/list-userid",  verify ,  listByUserId)
+router.post("/add", verify, add);
+router.put("/edit/:id", verify, edit);
+router.delete("/delete/:personId", verify, deleteData);
+router.get("/list-userid", verify, listByUserId)
 
 
 
