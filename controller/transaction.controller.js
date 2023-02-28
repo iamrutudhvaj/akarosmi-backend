@@ -5,30 +5,32 @@ const bcrypt = require("bcrypt");
 exports.insert = async (req, res) => {
     try {
         const bookId = req.body.bookId;
-        console.log("::bookId::", bookId);
         const personId = req.body.personId;
-        console.log("::personId::", personId);
-
-        const status = 1 || req.body.status
-        console.log("::status::", status);
+        const status = req.body.status || 1
 
         if (status == 1 || status == 2 || status == 3) {
-            const insertData = new Tranc({
-                bookId: bookId,
-                personId: personId,
-                borrowedDate: req.body.borrowedDate,
-                returnDate: req.body.returnDate,
-                status: status
-            });
-            console.log("::insertData::", insertData);
-            const saveData = await insertData.save();
-            console.log("::saveData::", saveData);
+            const { borrowedDate, returnDate } = req.body;
+            if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
+                res.status(401).json({
+                    message: "PLEASE ENTER ALL FILED",
+                    status: 401
+                })
+            } else {
+                const insertData = new Tranc({
+                    bookId: bookId,
+                    personId: personId,
+                    borrowedDate: borrowedDate,
+                    returnDate: returnDate,
+                    status: status
+                });
+                const saveData = await insertData.save();
 
-            res.status(201).json({
-                message: "TRANSACTION COMPLETE",
-                status: 201,
-                data: saveData
-            })
+                res.status(201).json({
+                    message: "TRANSACTION COMPLETE",
+                    status: 201,
+                    data: saveData
+                })
+            }
         } else {
             res.status(400).json({
                 message: "ENTER VALID INPUT",
@@ -48,39 +50,45 @@ exports.insert = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        const ID = req.params.id;
-        console.log("::ID::", ID);
+        const id = req.params.id;
+        const findTranc = await Tranc.findById({ _id: id })
 
-        if (ID) {
-            const updateData = await Tranc.findByIdAndUpdate(
-                {
-                    _id: ID
-                },
-                {
-                    $set: {
-                        borrowedDate: req.body.borrowedDate,
-                        returnDate: req.body.returnDate
-                    }
-                },
-                {
-                    new: true
-                });
-
-            console.log("::updateData::", updateData);
-            res.status(200).json({
-                message: "TRANSACTION UPDATE SUCCESSFULLY",
-                status: 200,
-                data: updateData
-            })
-        } else {
+        if (findTranc == null) {
             res.status(401).json({
                 message: "DATA NOT FOUND",
                 status: 401
             })
+        } else {
+            const { borrowedDate, returnDate } = req.body;
+            if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
+                res.status(401).json({
+                    message: "PLEASE ENTER ALL FILED",
+                    status: 401
+                })
+            } else {
+                const updateData = await Tranc.findByIdAndUpdate(
+                    {
+                        _id: id
+                    },
+                    {
+                        $set: {
+                            borrowedDate: borrowedDate,
+                            returnDate: returnDate
+                        }
+                    },
+                    {
+                        new: true
+                    });
+                res.status(200).json({
+                    message: "TRANSACTION UPDATE SUCCESSFULLY",
+                    status: 200,
+                    data: updateData
+                })
+            }
         }
 
     } catch (error) {
-        console.log("update--ERROR:: ", error);
+        console.log("update--ERROR::", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -92,23 +100,18 @@ exports.update = async (req, res) => {
 
 exports.remove = async (req, res) => {
     try {
-        const ID = req.params.id;
-        console.log("::ID::", ID);
+        const id = req.params.id;
         const userData = req.user.password;
-        console.log("::userData::", userData);
         const password = req.body.password;
-        console.log("::password::", password);
 
         const comparePass = await bcrypt.compare(password, userData);
-        console.log("::comparePass::", comparePass);
 
         if (comparePass == true) {
             const removeTransaction = await Tranc.deleteOne(
                 {
-                    _id: ID
+                    _id: id
                 }
             );
-            console.log("::removeTransaction::", removeTransaction);
             res.status(200).json({
                 message: "TRANSACTION REMOVE SUCCESSFULLY",
                 status: 200
@@ -134,11 +137,10 @@ exports.remove = async (req, res) => {
 
 exports.listByUserId = async (req, res) => {
     try {
-        const ID = req.user.id
-        const page = req.body.page;
-        const limit = req.body.limit;
-
-        const getBook = await Tranc.find({ userId: ID }).limit(limit * 1).skip((page - 1) * limit);
+        const id = req.user.id
+        const page = req.query.page;
+        const limit = req.query.limit;
+        const getBook = await Tranc.find({ userId: id }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({
             message: "GET ALL BOOK BY USER",
@@ -160,26 +162,23 @@ exports.listByUserId = async (req, res) => {
 
 exports.updateStatus = async (req, res) => {
     try {
-        const ID = req.params.id;
-        console.log("::ID::", ID);
+        const id = req.params.id;
 
-        if (ID) {
+        if (id) {
             const status = req.body.status
-            console.log("::status::", status);
             if (status == 1 || status == 2 || status == 3) {
                 const update = await Tranc.findByIdAndUpdate(
                     {
-                        _id: ID
+                        _id: id
                     },
                     {
                         $set: {
-                            status
+                            status: status
                         }
                     },
                     {
                         new: true
                     })
-                console.log("::update::", update);
                 res.status(200).json({
                     message: "STATUS UPDATE SUCCESSFULLY",
                     status: 200,
@@ -197,7 +196,6 @@ exports.updateStatus = async (req, res) => {
                 status: 401
             })
         }
-
 
     } catch (error) {
         console.log("transactionUpdateStatus--ERROR:: ", error);

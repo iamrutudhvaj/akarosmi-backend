@@ -12,7 +12,7 @@ exports.add = async (req, res) => {
             uniqueId += chars[nCode];
         }
 
-        const ID = req.user._id
+        const id = req.user._id
         const { firstName, lastName, email, reference } = req.body
         if (firstName.trim().length == 0 || lastName.trim().length == 0 || email.trim().length == 0 || reference.trim().length == 0) {
             res.status(401).json({
@@ -29,7 +29,7 @@ exports.add = async (req, res) => {
             } else {
                 const insertData = new Person({
                     personId: uniqueId,
-                    userId: ID,
+                    userId: id,
                     firstName: firstName,
                     lastName: lastName,
                     mobileNumber: mobileNumber,
@@ -60,27 +60,38 @@ exports.edit = async (req, res) => {
     try {
         const id = req.user._id;
         const personId = req.params.id;
+        const { firstName, lastName, email, reference } = req.body
 
-        const updateData = await Person.updateOne(
-            {
-                userId: id,
-                personId: personId
-            },
-            {
-                $set: {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    mobileNumber: req.body.mobileNumber,
-                    email: req.body.email,
-                    reference: req.body.reference
-                }
+        if (firstName.trim().length == 0 || lastName.trim().length == 0 || email.trim().length == 0 || reference.trim().length == 0) {
+            res.status(401).json({
+                message: "PLEASE ENTER ALL FILED",
+                status: 401
             })
+        } else {
+            const updateData = await Person.updateOne(
+                {
+                    userId: id,
+                    personId: personId
+                },
+                {
+                    $set: {
+                        firstName: firstName,
+                        lastName: lastName,
+                        mobileNumber: mobileNumber,
+                        email: email,
+                        reference: reference
+                    }
+                },
+                {
+                    new : true
+                })
 
-        res.status(200).json({
-            message: `${personId}'s DETAILS UPDATE SUCCESSFULLY`,
-            status: 200,
-            data: id
-        })
+            res.status(200).json({
+                message: `${personId}'s DETAILS UPDATE SUCCESSFULLY`,
+                status: 200,
+                data: updateData
+            })
+        }
 
     } catch (error) {
         console.log("personEdit--ERROR:: ", error);
@@ -97,20 +108,19 @@ exports.deleteData = async (req, res) => {
         const personId = req.params.personId
         const password = req.body.password
         const data = req.user._id;
-
-        const getUser = await User.findOne({ _id : data})
+        const getUser = await User.findOne({ _id: data })
         const comparePass = await bcrypt.compare(password, getUser.password);
 
         if (comparePass == true) {
-                const deletePerson = await Person.deleteOne(
-                    {
-                        personId: personId
-                    }
-                );
-                res.status(200).json({
-                    message: "PERSON DELETE SUCCESSFULLY",
-                    status: 200
-                })
+            const deletePerson = await Person.deleteOne(
+                {
+                    personId: personId
+                }
+            );
+            res.status(200).json({
+                message: "PERSON DELETE SUCCESSFULLY",
+                status: 200
+            })
         } else {
             res.status(401).json({
                 message: "PASSWORD INCORRECT",
@@ -133,7 +143,6 @@ exports.listByUserId = async (req, res) => {
         const ID = req.user.id
         const page = req.body.page;
         const limit = req.body.limit;
-
         const getBook = await Person.find({ userId: ID }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({

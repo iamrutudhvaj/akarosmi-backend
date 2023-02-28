@@ -10,7 +10,7 @@ exports.uploadAsset = async (req, res) => {
                 img.push(resp.filename)
             }
 
-            res.status(401).json({
+            res.status(200).json({
                 status: true,
                 message: "Asset Uploaded Successfully",
                 data: {...img}

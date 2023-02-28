@@ -5,13 +5,11 @@ const bcrypt = require("bcrypt");
 
 
 // ----------  Add API For Book ---------- //
-exports.add = async (req, res) => {
+exports.add = async (req, res) => { 
     try {
-        console.log("add---1");
         /* For Generating UInique Code */
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         let bookId = "";
-        console.log("add---1", bookId);
         for (let i = 1; i <= 6; i++) {
             const nCode = Math.floor(Math.random() * 36);
             bookId += chars[nCode];
@@ -20,10 +18,8 @@ exports.add = async (req, res) => {
 
         /* For Image Uploading Code */
         const cloudinaryImageUploadMethod = async file => {
-            console.log("add---1", file);
             return new Promise(resolve => {
                 cloudinary.uploader.upload(file, (err, res) => {
-                    console.log("file::-", file);
                     if (err) return err
                     resolve({
                         res: res.secure_url
@@ -143,8 +139,8 @@ exports.bookDelete = async (req, res) => {
 exports.bookListByUser = async (req, res) => {
     try {
         const id = req.user.id
-        const page = req.body.page;
-        const limit = req.body.limit;
+        const page = req.query.page;
+        const limit = req.query.limit;
 
         const getBook = await Book.find({ userId: id }).limit(limit * 1).skip((page - 1) * limit);
 
@@ -157,7 +153,7 @@ exports.bookListByUser = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("::ERROR__:: ", error);
+        console.log("::bookListByUser-ERROR:: ", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -172,10 +168,8 @@ exports.imageUpload = async (req, res) => {
     try {
 
         const cloudinaryImageUploadMethod = async file => {
-            console.log("file--::cloud", file);
             return new Promise(resolve => {
                 cloudinary.uploader.upload(file, (err, res) => {
-                    console.log("upload::-->", file);
                     if (err) return err
                     resolve({
                         res: res.secure_url
@@ -187,7 +181,6 @@ exports.imageUpload = async (req, res) => {
 
         const urls = []
         const files = req.files;
-        console.log("files::--", files);
 
         for (const file of files) {
             const { path } = file
