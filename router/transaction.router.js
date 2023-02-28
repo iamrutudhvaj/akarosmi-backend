@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const { verify } = require("../middleware/user.authantication");
 
-
 const {
     insert,
     update,
@@ -10,7 +9,7 @@ const {
     updateStatus
 } = require("../controller/transaction.controller");
 
-router.post("/insert/:bookId/:personId",verify, insert);
+router.post("/insert",verify, insert);
 router.put("/update/:id", verify , update);
 router.delete("/remove/:id", verify , remove);
 router.get("/list-user-tranc", verify ,  listByUserId);

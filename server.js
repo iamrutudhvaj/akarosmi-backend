@@ -14,10 +14,12 @@ const userRouter = require("./router/user.router");
 const bookRouter = require("./router/book.router");
 const personRouter = require("./router/person.router");
 const transactionRouter = require("./router/transaction.router");
+const aseetRouter = require("./router/asset.router");
 app.use("/user", userRouter);
 app.use("/book", bookRouter);
 app.use("/person", personRouter);
 app.use("/transaction", transactionRouter);
+app.use("/asset", aseetRouter);
 
 app.listen(port, () => {
     console.log("===============================================");

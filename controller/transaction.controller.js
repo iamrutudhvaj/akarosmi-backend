@@ -4,9 +4,9 @@ const bcrypt = require("bcrypt");
 
 exports.insert = async (req, res) => {
     try {
-        const bookId = req.params.bookId;
+        const bookId = req.body.bookId;
         console.log("::bookId::", bookId);
-        const personId = req.params.personId;
+        const personId = req.body.personId;
         console.log("::personId::", personId);
 
         const status = 1 || req.body.status

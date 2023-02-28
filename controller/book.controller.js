@@ -7,43 +7,55 @@ const bcrypt = require("bcrypt");
 // ----------  Add API For Book ---------- //
 exports.add = async (req, res) => {
     try {
+        console.log("add---1");
         /* For Generating UInique Code */
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         let bookId = "";
+        console.log("add---1", bookId);
         for (let i = 1; i <= 6; i++) {
             const nCode = Math.floor(Math.random() * 36);
             bookId += chars[nCode];
         }
-
         const data = req.user;
-        const { name, author, publisher } = req.body;
-        const findBook = await Book.find({ name: name });
 
-        if (findBook.length == 0) {
-            const insertData = new Book({
-                bookId: bookId,
-                userId: data._id,
-                name: name,
-                author: author,
-                publisher: publisher,
+        /* For Image Uploading Code */
+        const cloudinaryImageUploadMethod = async file => {
+            console.log("add---1", file);
+            return new Promise(resolve => {
+                cloudinary.uploader.upload(file, (err, res) => {
+                    console.log("file::-", file);
+                    if (err) return err
+                    resolve({
+                        res: res.secure_url
+                    })
+                }
+                )
             })
-            const saveData = await insertData.save();
+        }
+        const urls = []
+        const image = req.body.image;
 
-            res.status(201).json({
-                message: "BOOK DATA INSERT SUCESSFULLY",
-                status: 201,
-                data: saveData
-            })
-
-        } else {
-
-            res.status(409).json({
-                message: "BOOK NAME ALREADY EXIST",
-                status: 409,
-            })
-
+        for (const img of image) {
+            const imgPath = `public/uploads/${img}`
+            const newPath = await cloudinaryImageUploadMethod(imgPath)
+            urls.push(newPath);
         }
 
+        const insertData = new Book({
+            bookId: bookId,
+            userId: data._id,
+            name: req.body.name,
+            author: req.body.author,
+            publisher: req.body.publisher,
+            images: urls
+        })
+        const saveData = await insertData.save();
+
+        res.status(201).json({
+            message: "BOOK DATA INSERT SUCESSFULLY",
+            status: 201,
+            data: saveData
+        })
     } catch (error) {
         console.log("bookAdd-Error:", error);
         res.status(500).json({
@@ -160,8 +172,10 @@ exports.imageUpload = async (req, res) => {
     try {
 
         const cloudinaryImageUploadMethod = async file => {
+            console.log("file--::cloud", file);
             return new Promise(resolve => {
                 cloudinary.uploader.upload(file, (err, res) => {
+                    console.log("upload::-->", file);
                     if (err) return err
                     resolve({
                         res: res.secure_url
@@ -173,6 +187,7 @@ exports.imageUpload = async (req, res) => {
 
         const urls = []
         const files = req.files;
+        console.log("files::--", files);
 
         for (const file of files) {
             const { path } = file

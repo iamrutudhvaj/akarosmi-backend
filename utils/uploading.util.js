@@ -5,7 +5,15 @@ const storage = multer.diskStorage({
         cb(null, 'public/uploads');
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
+        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+        let fileName = "";
+        for (let i = 1; i <= 6; i++) {
+            const nCode = Math.floor(Math.random() * 36);
+            fileName += chars[nCode];
+        }
+        var re = /(?:\.([^.]+))?$/;
+        var ext = re.exec(file.originalname)[0];
+        cb(null, Date.now() + '-' + fileName + ext);
     },
 });
 
