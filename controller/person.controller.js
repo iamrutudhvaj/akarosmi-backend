@@ -68,29 +68,37 @@ exports.edit = async (req, res) => {
                 status: 401
             })
         } else {
-            const updateData = await Person.updateOne(
-                {
-                    userId: id,
-                    personId: personId
-                },
-                {
-                    $set: {
-                        firstName: firstName,
-                        lastName: lastName,
-                        mobileNumber: mobileNumber,
-                        email: email,
-                        reference: reference
-                    }
-                },
-                {
-                    new : true
+            const mobileNumber = req.body.mobileNumber
+            if (mobileNumber.length < 10) {
+                res.status(401).json({
+                    message: "PHONE NUMBER MUST BE 10 DIGIT",
+                    status: 401
                 })
+            } else {
+                const updateData = await Person.updateOne(
+                    {
+                        userId: id,
+                        personId: personId
+                    },
+                    {
+                        $set: {
+                            firstName: firstName,
+                            lastName: lastName,
+                            mobileNumber: mobileNumber,
+                            email: email,
+                            reference: reference
+                        }
+                    },
+                    {
+                        new: true
+                    })
 
-            res.status(200).json({
-                message: `${personId}'s DETAILS UPDATE SUCCESSFULLY`,
-                status: 200,
-                data: updateData
-            })
+                res.status(200).json({
+                    message: `${personId}'s DETAILS UPDATE SUCCESSFULLY`,
+                    status: 200,
+                    data: updateData
+                })
+            }
         }
 
     } catch (error) {
