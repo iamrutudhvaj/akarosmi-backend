@@ -136,7 +136,7 @@ exports.bookDelete = async (req, res) => {
 
 
 // ---------- User Id list API For Book ---------- //
-exports.bookListByUser = async (req, res) => {
+exports.listByBookId = async (req, res) => {
     try {
         const id = req.user.id
         const page = req.query.page;

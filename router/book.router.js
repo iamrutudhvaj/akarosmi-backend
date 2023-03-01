@@ -6,7 +6,7 @@ const {
     add,
     edit,
     bookDelete,
-    bookListByUser,
+    listByBookId,
     imageUpload,
     removeImage
 } = require("../controller/book.controller");
@@ -14,7 +14,7 @@ const {
 router.post("/add", verify, add);
 router.put("/edit/:id", verify, edit);
 router.delete("/delete/:id", verify, bookDelete);
-router.get("/list-by-user", verify, bookListByUser);
+router.get("/list-by-user", verify, listByBookId);
 router.post("/image-upload/:bookId", verify, upload.array('images'), imageUpload);
 router.post("/image-remove/:bookId", verify, removeImage);
 

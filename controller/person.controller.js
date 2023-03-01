@@ -146,15 +146,15 @@ exports.deleteData = async (req, res) => {
 };
 // ---------- End Delete Person API For Person ---------- //
 
-exports.listByUserId = async (req, res) => {
+exports.listByPersonId = async (req, res) => {
     try {
-        const ID = req.user.id
-        const page = req.body.page;
-        const limit = req.body.limit;
-        const getBook = await Person.find({ userId: ID }).limit(limit * 1).skip((page - 1) * limit);
+        const id = req.user.id
+        const page = req.query.page;
+        const limit = req.query.limit;
+        const getBook = await Person.find({ userId: id }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({
-            message: "GET ALL BOOK BY USER",
+            message: "GET ALL PERSON BY USER",
             status: 200,
             page: page,
             size: limit,

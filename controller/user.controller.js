@@ -28,10 +28,10 @@ exports.registration = async (req, res) => {
                 })
             } else {
                 const { firstName, lastName, date, gender, phone_code } = req.body
-                if (firstName.trim().length == 0 || lastName.trim().length == 0 || date.trim().length == 0 ||  gender.trim().length == 0 || phone_code.trim().length == 0 ) {
+                if (firstName.trim().length == 0 || lastName.trim().length == 0 || date.trim().length == 0 || gender.trim().length == 0 || phone_code.trim().length == 0) {
                     res.status(401).json({
-                        message : "PLEASE ENTER ALL FILED",
-                        status : 401
+                        message: "PLEASE ENTER ALL FILED",
+                        status: 401
                     })
                 } else {
                     const insertUserData = new User({
@@ -240,3 +240,91 @@ exports.changePassword = async (req, res) => {
     }
 }
 // ---------- End ChangePassword API For User ---------- //
+
+
+// ---------- Delete API For User ---------- //
+// exports.deleteUser = async (req, res) => {
+//     try {
+//         const data = req.user;
+//         const pass = req.body.password;
+//         const comparePass = await bcrypt.compare(pass, data.password);
+
+//         if (comparePass == true) {
+//             const deleteData = await User.deleteOne(
+//                 {
+//                     _id: data.id
+//                 }
+//             )
+//             res.status(200).json({
+//                 message: "USER DELETE SUCCESSFULLY",
+//                 status: 200
+//             })
+//         } else {
+//             res.status(400).json({
+//                 message: "PASSWORD NOT MATCH",
+//                 status: 400
+//             })
+//         }
+
+
+//     } catch (error) {
+//         console.log("User-delete--ERROR:: ", error);
+//         res.status(500).json({
+//             message: "SOMETHING WENT WRONG",
+//             status: 500
+//         })
+//     }
+// }
+// ---------- End Delete API For User ---------- //
+
+
+// ---------- Edit Details API For User ---------- //
+exports.profileEdit = async (req, res) => {
+    try {
+        const Data = req.user
+
+        const phone = req.body.phone_number;
+        if (phone.length < 10) {
+            res.status(401).json({
+                message: "PHONE NUMBER MUST BE 10 DIGIT",
+                status: 401
+            })
+        } else {
+            const { firstName, lastName, date, gender, phone_code } = req.body
+            if (firstName.trim().length == 0 || lastName.trim().length == 0 || date.trim().length == 0 || gender.trim().length == 0 || phone_code.trim().length == 0) {
+                res.status(401).json({
+                    message: "PLEASE ENTER ALL FILED",
+                    status: 401
+                })
+            } else {
+                const updateUserData = await User.findByIdAndUpdate(
+                    {
+                        _id: Data.id
+                    },
+                    {
+                        $set: {
+                            firstName: firstName,
+                            lastName: lastName,
+                            date: date,
+                            gender: gender,
+                            phone_code: phone_code,
+                            phone_number: phone
+                        }
+                    }
+                )
+                res.status(200).json({
+                    message: "USER DETAILS UPDATE SUCCESSFULLY",
+                    status: 200,
+                    data: updateUserData
+                })
+            }
+        }
+    } catch (error) {
+        console.log("User-Edit--ERROR:: ", error);
+        res.status(500).json({
+            message: "SOMETHING WENT WRONG",
+            status: 500
+        })
+    }
+}
+// ---------- End Edit Details API For User ---------- //
