@@ -164,7 +164,7 @@ exports.listByPersonId = async (req, res) => {
         const id = req.params.id
         const page = req.query.page;
         const limit = req.query.limit;
-        const getBook = await Tranc.find({ personId: id }).limit(limit * 1).skip((page - 1) * limit);
+        const getBook = await Tranc.find({ person_id: id }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({
             message: "GET ALL TRANSACTION BY USER",
@@ -190,7 +190,7 @@ exports.listByBookId = async (req, res) => {
         const id = req.params.id
         const page = req.query.page;
         const limit = req.query.limit;
-        const getBook = await Tranc.find({ bookId: id }).limit(limit * 1).skip((page - 1) * limit);
+        const getBook = await Tranc.find({ book_id: id }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({
             message: "GET ALL TRANSACTION BY USER",
@@ -210,6 +210,7 @@ exports.listByBookId = async (req, res) => {
 // ---------- End list-By-User Book API For transaction ---------- //
 
 
+// ----------  updateStatus API For transaction ---------- //
 exports.updateStatus = async (req, res) => {
     try {
         const id = req.params.id;
@@ -255,4 +256,30 @@ exports.updateStatus = async (req, res) => {
         })
     }
 };
-// ---------- End updateStatus Person API For transaction ---------- //
+// ---------- End updateStatus  API For transaction ---------- //
+
+
+// ----------  list-by-user-id API For transaction ---------- //
+exports.listByUserId = async (req, res) => {
+    try {
+        // const id = req.user
+        const page = req.query.page;
+        const limit = req.query.limit;
+        const getBook = await Tranc.find().limit(limit * 1).skip((page - 1) * limit);
+
+        res.status(200).json({
+            message: "GET ALL TRANSACTION BY USER",
+            status: 200,
+            page: page,
+            size: limit,
+            data: getBook
+        });
+    } catch (error) {
+        console.log("transactionListByUser--ERROR:: ", error);
+        res.status(500).json({
+            message: "SOMETHING WENT WRONG",
+            status: 500
+        })
+    }
+};
+// ---------- End list-by-user-id API For transaction ---------- //

@@ -7,7 +7,8 @@ const {
     remove,
     listByPersonId,
     listByBookId,
-    updateStatus
+    updateStatus,
+    listByUserId
 } = require("../controller/transaction.controller");
 
 router.post("/insert",verify, insert);
@@ -16,6 +17,7 @@ router.delete("/remove/:id", verify , remove);
 router.get("/list-user-person/:id", verify ,  listByPersonId);
 router.get("/list-user-book/:id", verify ,  listByBookId);
 router.put("/update-status/:id",  verify , updateStatus);
+router.get("/list-user-tranc", verify , listByUserId);
 
 
 module.exports = router;

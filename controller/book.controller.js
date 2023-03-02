@@ -5,37 +5,21 @@ const bcrypt = require("bcrypt");
 
 
 // ----------  Add API For Book ---------- //
-exports.add = async (req, res) => { 
+exports.add = async (req, res) => {
     try {
         /* For Generating UInique Code */
         let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+
         let bookId = "";
+
         for (let i = 1; i <= 6; i++) {
             const nCode = Math.floor(Math.random() * 36);
             bookId += chars[nCode];
         }
+
         const data = req.user;
 
-        /* For Image Uploading Code */
-        const cloudinaryImageUploadMethod = async file => {
-            return new Promise(resolve => {
-                cloudinary.uploader.upload(file, (err, res) => {
-                    if (err) return err
-                    resolve({
-                        res: res.secure_url
-                    })
-                }
-                )
-            })
-        }
-        const urls = []
-        const image = req.body.image;
-
-        for (const img of image) {
-            const imgPath = `public/uploads/${img}`
-            const newPath = await cloudinaryImageUploadMethod(imgPath)
-            urls.push(newPath);
-        }
+        const urls = req.body.image;
 
         const insertData = new Book({
             bookId: bookId,

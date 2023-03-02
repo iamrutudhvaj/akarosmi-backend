@@ -1,19 +1,38 @@
+const fs = require('fs')
+const cloudinary = require("../utils/cloudinary.util");
+
 exports.uploadAsset = async (req, res) => {
     try {
 
         const key = req.query.key;
         if (key == 'TTbQqibLzmxsCkLFKtwV') {
 
-            const image = req.files;
-            const img = [];
-            for (const resp of image) {
-                img.push(resp.filename)
+            const images = req.files;
+            /* For Image Uploading Code */
+            const cloudinaryImageUploadMethod = async file => {
+                return new Promise(resolve => {
+                    cloudinary.uploader.upload(file, (err, res) => {
+                        if (err) return err
+                        resolve({
+                            res: res.secure_url
+                        })
+                    }
+                    )
+                })
+            }
+            const urls = []
+
+            for (const img of images) {
+                const { path } = img
+                const newPathData = await cloudinaryImageUploadMethod(path)
+                urls.push(newPathData["res"]);
+                fs.unlinkSync(path);
             }
 
             res.status(200).json({
                 status: true,
                 message: "Asset Uploaded Successfully",
-                data: {...img}
+                data: urls
             })
 
         } else {
