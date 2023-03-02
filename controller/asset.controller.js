@@ -3,7 +3,6 @@ const cloudinary = require("../utils/cloudinary.util");
 
 exports.uploadAsset = async (req, res) => {
     try {
-
         const key = req.query.key;
         if (key == 'TTbQqibLzmxsCkLFKtwV') {
 

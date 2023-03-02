@@ -1,7 +1,8 @@
 const User = require("../model/user.model");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
-const sendEmail = require("../helper/mail.code");
+const sendEmail = require("../utils/mail.helper");
+
 
 // ---------- Registration API For User ---------- //
 exports.registration = async (req, res) => {
@@ -240,42 +241,6 @@ exports.changePassword = async (req, res) => {
     }
 }
 // ---------- End ChangePassword API For User ---------- //
-
-
-// ---------- Delete API For User ---------- //
-// exports.deleteUser = async (req, res) => {
-//     try {
-//         const data = req.user;
-//         const pass = req.body.password;
-//         const comparePass = await bcrypt.compare(pass, data.password);
-
-//         if (comparePass == true) {
-//             const deleteData = await User.deleteOne(
-//                 {
-//                     _id: data.id
-//                 }
-//             )
-//             res.status(200).json({
-//                 message: "USER DELETE SUCCESSFULLY",
-//                 status: 200
-//             })
-//         } else {
-//             res.status(400).json({
-//                 message: "PASSWORD NOT MATCH",
-//                 status: 400
-//             })
-//         }
-
-
-//     } catch (error) {
-//         console.log("User-delete--ERROR:: ", error);
-//         res.status(500).json({
-//             message: "SOMETHING WENT WRONG",
-//             status: 500
-//         })
-//     }
-// }
-// ---------- End Delete API For User ---------- //
 
 
 // ---------- Edit Details API For User ---------- //

@@ -3,7 +3,6 @@ const User = require("../model/user.model");
 const cloudinary = require("../utils/cloudinary.util");
 const bcrypt = require("bcrypt");
 
-
 // ----------  Add API For Book ---------- //
 exports.add = async (req, res) => {
     try {

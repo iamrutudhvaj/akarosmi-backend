@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const Book = require("../model/book.model");
 const Person = require("../model/person.model");
 
-
 exports.insert = async (req, res) => {
     try {
         const bookId = req.body.bookId;

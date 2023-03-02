@@ -47,8 +47,6 @@ const userSchema = new mongoose.Schema({
     collection: 'user'
 });
 
-
-
 userSchema.methods.generateauthtoken = async function (res) {
     try {
         const generateToken = jwt.sign({ _id: this._id.toString() }, process.env.USER_AUTH_TOKEN )
@@ -63,7 +61,6 @@ userSchema.methods.generateauthtoken = async function (res) {
         })
     }
 }
-
 
 userSchema.pre("save", async function (next) {
     if (this.isModified("password")) {

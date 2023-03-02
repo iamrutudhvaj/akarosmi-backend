@@ -13,6 +13,4 @@ router.put("/edit/:id", verify, edit);
 router.delete("/delete/:personId", verify, deleteData);
 router.get("/list-userid", verify, listByPersonId)
 
-
-
 module.exports = router;

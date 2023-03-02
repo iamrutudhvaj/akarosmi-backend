@@ -19,5 +19,4 @@ router.get("/list-user-book/:id", verify ,  listByBookId);
 router.put("/update-status/:id",  verify , updateStatus);
 router.get("/list-user-tranc", verify , listByUserId);
 
-
 module.exports = router;
