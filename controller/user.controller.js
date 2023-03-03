@@ -255,7 +255,7 @@ exports.profileEdit = async (req, res) => {
                 status: 401
             })
         } else {
-            const { firstName, lastName, date, gender, phone_code } = req.body
+            const { firstName, lastName, date, gender, phone_code, email } = req.body;
             if (firstName.trim().length == 0 || lastName.trim().length == 0 || date.trim().length == 0 || gender.trim().length == 0 || phone_code.trim().length == 0) {
                 res.status(401).json({
                     message: "PLEASE ENTER ALL FILED",
@@ -273,8 +273,12 @@ exports.profileEdit = async (req, res) => {
                             date: date,
                             gender: gender,
                             phone_code: phone_code,
-                            phone_number: phone
+                            phone_number: phone,
+                            email: email.trim()
                         }
+                    },
+                    {
+                        new: true
                     }
                 )
                 res.status(200).json({

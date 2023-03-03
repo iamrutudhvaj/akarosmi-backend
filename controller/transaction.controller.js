@@ -163,7 +163,7 @@ exports.listByPersonId = async (req, res) => {
         const id = req.params.id
         const page = req.query.page;
         const limit = req.query.limit;
-        const getBook = await Tranc.find({ person_id: id }).limit(limit * 1).skip((page - 1) * limit);
+        const getBook = await Tranc.find({ personId: id }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({
             message: "GET ALL TRANSACTION BY USER",
@@ -189,7 +189,7 @@ exports.listByBookId = async (req, res) => {
         const id = req.params.id
         const page = req.query.page;
         const limit = req.query.limit;
-        const getBook = await Tranc.find({ book_id: id }).limit(limit * 1).skip((page - 1) * limit);
+        const getBook = await Tranc.find({ bookId: id }).limit(limit * 1).skip((page - 1) * limit);
 
         res.status(200).json({
             message: "GET ALL TRANSACTION BY USER",
