@@ -261,17 +261,35 @@ exports.updateStatus = async (req, res) => {
 // ----------  list-by-user-id API For transaction ---------- //
 exports.listByUserId = async (req, res) => {
     try {
-        // const id = req.user
         const page = req.query.page;
         const limit = req.query.limit;
         const getBook = await Tranc.find().limit(limit * 1).skip((page - 1) * limit);
+
+        const response = [];
+        var bookName = [];
+        var personName = [];
+        for (var findData of getBook) {
+            const findBookName = await Book.findOne({ bookId: findData.bookId }).select('name');
+            const findPersonName = await Person.findOne({ personId: findData.personId }).select('firstName');
+            const respData = {
+                _id: findData._id,
+                bookId: findData.bookId,
+                bookName: findBookName ? findBookName.name : "",
+                personId: findData.personId,
+                personName: findPersonName ? findPersonName.firstName : "",
+                borrowedDate: findData.borrowedDate,
+                returnDate: findData.returnDate,
+                status: findData.status
+            }
+            response.push(respData)
+        }
 
         res.status(200).json({
             message: "GET ALL TRANSACTION BY USER",
             status: 200,
             page: page,
             size: limit,
-            data: getBook
+            data: response
         });
     } catch (error) {
         console.log("transactionListByUser--ERROR:: ", error);

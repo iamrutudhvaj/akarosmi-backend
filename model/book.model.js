@@ -28,6 +28,10 @@ const bookSchema = new mongoose.Schema({
     thumbnail: {
         type: String,
         require: true
+    },
+    status : {
+        type : String,
+        require: true
     }
 }, {
     timestamps: true

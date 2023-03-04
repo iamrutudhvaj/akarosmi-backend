@@ -26,7 +26,8 @@ exports.add = async (req, res) => {
             name: req.body.name,
             author: req.body.author,
             publisher: req.body.publisher,
-            images: urls
+            images: urls,
+            status : req.body.status
         })
         const saveData = await insertData.save();
 
