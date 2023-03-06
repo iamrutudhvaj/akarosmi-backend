@@ -297,3 +297,39 @@ exports.profileEdit = async (req, res) => {
     }
 }
 // ---------- End Edit Details API For User ---------- //
+
+// ---------- Delete Details API For User ---------- //
+exports.deleteUser = async (req, res) => {
+    try {
+        const data = req.user
+        const pass = req.body.password
+
+        const comparePass = await bcrypt.compare(pass, data.password);
+        if (comparePass == true) {
+
+            const deleteData = await User.findByIdAndDelete(
+                {
+                    _id: data._id
+                },
+            )
+            res.status(200).json({
+                message: "USER DELETE SUCCESSFULLY",
+                status: 200
+            })
+
+        } else {
+            res.status(401).json({
+                message: "PASSWORD NOT MATCH",
+                status: 401
+            })
+        }
+    } catch (error) {
+        console.log("User-Delete--ERROR:: ", error);
+        res.status(500).json({
+            message: "SOMETHING WENT WRONG",
+            status: 500
+        })
+    }
+}
+
+// ---------- Delete Details API For User ---------- //

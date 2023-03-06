@@ -7,9 +7,7 @@ exports.insert = async (req, res) => {
     try {
         const bookId = req.body.bookId;
         const personId = req.body.personId;
-
         const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1 });
-
         const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 })
 
         if (!bookFind) {
@@ -24,35 +22,25 @@ exports.insert = async (req, res) => {
                     status: 401
                 })
             } else {
-                const status = req.body.status || 1
-
-                if (status == 1 || status == 2 || status == 3) {
-                    const { borrowedDate, returnDate } = req.body;
-                    if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
-                        res.status(401).json({
-                            message: "PLEASE ENTER ALL FILED",
-                            status: 401
-                        })
-                    } else {
-                        const insertData = new Tranc({
-                            bookId: bookId,
-                            personId: personId,
-                            borrowedDate: borrowedDate,
-                            returnDate: returnDate,
-                            status: status
-                        });
-                        const saveData = await insertData.save();
-
-                        res.status(201).json({
-                            message: "TRANSACTION COMPLETE",
-                            status: 201,
-                            data: saveData
-                        })
-                    }
+                const { borrowedDate, returnDate } = req.body;
+                if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
+                    res.status(401).json({
+                        message: "PLEASE ENTER ALL FILED",
+                        status: 401
+                    })
                 } else {
-                    res.status(400).json({
-                        message: "ENTER VALID INPUT",
-                        status: 400
+                    const insertData = new Tranc({
+                        bookId: bookId,
+                        personId: personId,
+                        borrowedDate: borrowedDate,
+                        returnDate: returnDate
+                    });
+                    const saveData = await insertData.save();
+
+                    res.status(201).json({
+                        message: "TRANSACTION COMPLETE",
+                        status: 201,
+                        data: saveData
                     })
                 }
             }
@@ -278,8 +266,7 @@ exports.listByUserId = async (req, res) => {
                 personId: findData.personId,
                 personName: findPersonName ? findPersonName.firstName : "",
                 borrowedDate: findData.borrowedDate,
-                returnDate: findData.returnDate,
-                status: findData.status
+                returnDate: findData.returnDate
             }
             response.push(respData)
         }
