@@ -5,8 +5,7 @@ const Person = require("../model/person.model");
 
 exports.insert = async (req, res) => {
     try {
-        const bookId = req.body.bookId;
-        const personId = req.body.personId;
+        const { bookId, personId } = req.body;
         const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1 });
         const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 })
 
@@ -33,7 +32,8 @@ exports.insert = async (req, res) => {
                         bookId: bookId,
                         personId: personId,
                         borrowedDate: borrowedDate,
-                        returnDate: returnDate
+                        returnDate: returnDate,
+                        status: req.body.status
                     });
                     const saveData = await insertData.save();
 
@@ -62,6 +62,10 @@ exports.insert = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const id = req.params.id;
+        const { bookId, personId } = req.body;
+        const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1 });
+        const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 })
+
         const findTranc = await Tranc.findById({ _id: id })
 
         if (findTranc == null) {
@@ -70,31 +74,48 @@ exports.update = async (req, res) => {
                 status: 401
             })
         } else {
-            const { borrowedDate, returnDate } = req.body;
-            if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
+            if (!bookFind) {
                 res.status(401).json({
-                    message: "PLEASE ENTER ALL FILED",
+                    message: "PLEASE ENTER VALID BOOK DETAILS",
                     status: 401
                 })
             } else {
-                const updateData = await Tranc.findByIdAndUpdate(
-                    {
-                        _id: id
-                    },
-                    {
-                        $set: {
-                            borrowedDate: borrowedDate,
-                            returnDate: returnDate
-                        }
-                    },
-                    {
-                        new: true
-                    });
-                res.status(200).json({
-                    message: "TRANSACTION UPDATE SUCCESSFULLY",
-                    status: 200,
-                    data: updateData
-                })
+                if (!personFind) {
+                    res.status(401).json({
+                        message: "PLEASE ENTER VALID PERSON DETAILS",
+                        status: 401
+                    })
+                } else {
+                    const { borrowedDate, returnDate } = req.body;
+                    if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
+                        res.status(401).json({
+                            message: "PLEASE ENTER ALL FILED",
+                            status: 401
+                        })
+                    } else {
+                        const updateData = await Tranc.findByIdAndUpdate(
+                            {
+                                _id: id
+                            },
+                            {
+                                $set: {
+                                    bookId: bookId,
+                                    personId: personId,
+                                    borrowedDate: borrowedDate,
+                                    returnDate: returnDate,
+                                    status: req.body.status
+                                }
+                            },
+                            {
+                                new: true
+                            });
+                        res.status(200).json({
+                            message: "TRANSACTION UPDATE SUCCESSFULLY",
+                            status: 200,
+                            data: updateData
+                        })
+                    }
+                }
             }
         }
 
@@ -266,7 +287,8 @@ exports.listByUserId = async (req, res) => {
                 personId: findData.personId,
                 personName: findPersonName ? findPersonName.firstName : "",
                 borrowedDate: findData.borrowedDate,
-                returnDate: findData.returnDate
+                returnDate: findData.returnDate,
+                status: findData.status
             }
             response.push(respData)
         }

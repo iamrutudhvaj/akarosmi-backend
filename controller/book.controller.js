@@ -58,33 +58,27 @@ exports.edit = async (req, res) => {
     try {
         const BookId = req.params.id;
         const data = req.user;
-        const status = req.body.status || 1
+        const urls = req.body.image;
 
-        if (status == 1 || status == 2 || status == 3) {
-            const updateBookData = await Book.updateOne(
-                {
-                    bookId: BookId,
-                    userId: data._id
-                },
-                {
-                    name: req.body.name,
-                    author: req.body.author,
-                    publisher: req.body.publisher,
-                    status: status
-                },
-                {
-                    new: true
-                });
-            res.status(200).json({
-                message: "BOOK DATA UPDATED",
-                status: 200
-            })
-        } else {
-            res.status(400).json({
-                message: "ENTER VALID INPUT",
-                status: 400
-            })
-        }
+        const updateBookData = await Book.updateOne(
+            {
+                bookId: BookId,
+                userId: data._id
+            },
+            {
+                name: req.body.name,
+                author: req.body.author,
+                publisher: req.body.publisher,
+                status: req.body.status,
+                images: urls
+            },
+            {
+                new: true
+            });
+        res.status(200).json({
+            message: "BOOK DATA UPDATED",
+            status: 200
+        })
 
     } catch (error) {
         console.log("editBook--Error::", error);

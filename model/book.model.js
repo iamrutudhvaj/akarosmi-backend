@@ -5,9 +5,9 @@ const bookSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    userId : {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref : 'user'
+        ref: 'user'
     },
     name: {
         type: String,
@@ -22,15 +22,15 @@ const bookSchema = new mongoose.Schema({
         require: true
     },
     images: {
-        type : mongoose.Schema.Types.Array,
-        require : true
+        type: mongoose.Schema.Types.Array,
+        require: true
     },
     thumbnail: {
         type: String,
         require: true
     },
-    status : {
-        type : String,
+    status: {
+        type: String,
         require: true
     }
 }, {
