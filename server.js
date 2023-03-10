@@ -10,6 +10,10 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 
+app.get("/", (req,res) => {
+    res.send("WelCome! Akarosmi World")
+})
+
 const userRouter = require("./router/user.router");
 const bookRouter = require("./router/book.router");
 const personRouter = require("./router/person.router");
