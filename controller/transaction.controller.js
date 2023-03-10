@@ -5,6 +5,7 @@ const Person = require("../model/person.model");
 
 exports.insert = async (req, res) => {
     try {
+        const userId = req.user._id;
         const { bookId, personId } = req.body;
         const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1 });
         const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 })
@@ -30,6 +31,7 @@ exports.insert = async (req, res) => {
                 } else {
                     const insertData = new Tranc({
                         bookId: bookId,
+                        userId: userId,
                         personId: personId,
                         borrowedDate: borrowedDate,
                         returnDate: returnDate,
@@ -270,9 +272,10 @@ exports.updateStatus = async (req, res) => {
 // ----------  list-by-user-id API For transaction ---------- //
 exports.listByUserId = async (req, res) => {
     try {
+        const userId = req.user._id;
         const page = req.query.page;
         const limit = req.query.limit;
-        const getBook = await Tranc.find().limit(limit * 1).skip((page - 1) * limit);
+        const getBook = await Tranc.find({ userId: userId }).limit(limit * 1).skip((page - 1) * limit);
 
         const response = [];
         var bookName = [];

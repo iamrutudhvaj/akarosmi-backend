@@ -5,6 +5,10 @@ const transactionSchema = new mongoose.Schema({
         type: String,
         ref: 'book'
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        require: true
+    },
     personId: {
         type: String,
         ref: 'person'

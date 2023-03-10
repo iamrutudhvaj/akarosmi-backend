@@ -311,7 +311,7 @@ exports.deleteUser = async (req, res) => {
                 {
                     _id: data._id
                 },
-            )
+            )+
             res.status(200).json({
                 message: "USER DELETE SUCCESSFULLY",
                 status: 200
