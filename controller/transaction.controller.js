@@ -7,6 +7,7 @@ exports.insert = async (req, res) => {
     try {
         const userId = req.user._id;
         const { bookId, personId } = req.body;
+        console.log("::bookId::", bookId.status);
         const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1 });
         const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 })
 
@@ -35,8 +36,9 @@ exports.insert = async (req, res) => {
                         personId: personId,
                         borrowedDate: borrowedDate,
                         returnDate: returnDate,
-                        status: req.body.status
+                        status: bookId.status
                     });
+                    console.log("::bookId.status::", bookId.status);
                     const saveData = await insertData.save();
 
                     res.status(201).json({

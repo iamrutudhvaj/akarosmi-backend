@@ -23,7 +23,7 @@ const transactionSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        require: true
+        ref: 'book'
     }
 }, {
     timestamps: true

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 mongoose.set('strictQuery', true);
 
-mongoose.connect("mongodb://127.0.0.1:27017/Akarosmi")
+mongoose.connect("mongodb+srv://akarosmi:4rUQ5lmUPEd2hzLw@cluster0.ego7r98.mongodb.net/test")
 .then(() => {
     console.log("Database Connected Successfully");
     console.log("===============================================");
