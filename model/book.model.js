@@ -30,8 +30,7 @@ const bookSchema = new mongoose.Schema({
         require: true
     },
     status: {
-        type: String,
-        require: true
+        type: String
     }
 }, {
     timestamps: true

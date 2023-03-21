@@ -7,9 +7,8 @@ exports.insert = async (req, res) => {
     try {
         const userId = req.user._id;
         const { bookId, personId } = req.body;
-        console.log("::bookId::", bookId.status);
-        const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1 });
-        const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 })
+        const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1, status: 1 });
+        const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 });
 
         if (!bookFind) {
             res.status(401).json({
@@ -30,16 +29,24 @@ exports.insert = async (req, res) => {
                         status: 401
                     })
                 } else {
+                    var bookStatus = 2
                     const insertData = new Tranc({
                         bookId: bookId,
                         userId: userId,
                         personId: personId,
                         borrowedDate: borrowedDate,
                         returnDate: returnDate,
-                        status: bookId.status
+                        status: bookStatus
                     });
-                    console.log("::bookId.status::", bookId.status);
                     const saveData = await insertData.save();
+
+                    const bookStatusUpdate = await Book.findOneAndUpdate({
+                            bookId: bookId
+                        },{
+                            status: bookStatus
+                        },{
+                            new: true
+                        })
 
                     res.status(201).json({
                         message: "TRANSACTION COMPLETE",
@@ -97,6 +104,7 @@ exports.update = async (req, res) => {
                             status: 401
                         })
                     } else {
+                        const bookUpdateStatus = req.body.status
                         const updateData = await Tranc.findByIdAndUpdate(
                             {
                                 _id: id
@@ -107,12 +115,24 @@ exports.update = async (req, res) => {
                                     personId: personId,
                                     borrowedDate: borrowedDate,
                                     returnDate: returnDate,
-                                    status: req.body.status
+                                    status: bookUpdateStatus
                                 }
                             },
                             {
                                 new: true
                             });
+
+                        const bookStatusUpdate = await Book.findOneAndUpdate(
+                            {
+                                bookId: bookId
+                            },
+                            {
+                                status: bookUpdateStatus
+                            },
+                            {
+                                new: true
+                            }
+                        )
                         res.status(200).json({
                             message: "TRANSACTION UPDATE SUCCESSFULLY",
                             status: 200,
@@ -141,11 +161,22 @@ exports.remove = async (req, res) => {
         const password = req.body.password;
 
         const comparePass = await bcrypt.compare(password, userData);
-
+        const findData = await Tranc.findById({ _id: id })
         if (comparePass == true) {
             const removeTransaction = await Tranc.deleteOne(
                 {
                     _id: id
+                }
+            );
+            const bookUpdateStatus = await Book.findOneAndUpdate(
+                {
+                    bookId: findData.bookId
+                },
+                {
+                    status: 1
+                },
+                {
+                    new: true
                 }
             );
             res.status(200).json({
@@ -158,7 +189,6 @@ exports.remove = async (req, res) => {
                 status: 401
             })
         }
-
 
     } catch (error) {
         console.log("remove--ERROR:: ", error);
