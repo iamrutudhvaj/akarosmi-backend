@@ -46,7 +46,7 @@ exports.add = async (req, res) => {
 // ---------- Edit Person API For Person ---------- //
 exports.edit = async (req, res) => {
     try {
-        const id = req.user._id;
+        const id = req.user.uid;
         const personId = req.params.id;
         const { firstName, lastName, email, reference } = req.body
 
@@ -140,7 +140,7 @@ exports.deleteData = async (req, res) => {
 // ---------- list By User ID API For Person ---------- //
 exports.listByPersonId = async (req, res) => {
     try {
-        const id = req.user.id
+        const id = req.user.uid
         const page = req.query.page;
         const limit = req.query.limit;
         const getBook = await Person.find({ userId: id }).limit(limit * 1).skip((page - 1) * limit);

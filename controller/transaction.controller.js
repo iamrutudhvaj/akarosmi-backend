@@ -348,10 +348,19 @@ exports.updateStatus = async (req, res) => {
 // ----------  list-by-user-id API For transaction ---------- //
 exports.listByUserId = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const userId = req.user.uid;
         const page = req.query.page;
         const limit = req.query.limit;
         const getBook = await Tranc.find({ userId: userId }).limit(limit * 1).skip((page - 1) * limit);
+
+        if (getBook.length == 0) {
+            
+            res.status(404).json({
+                message: "THERE IS NO BOOK DATA IN YOUR LIST",
+                status: 404
+            })
+
+        } else {
 
         const response = [];
         var bookName = [];
@@ -379,6 +388,9 @@ exports.listByUserId = async (req, res) => {
             size: limit,
             data: response
         });
+
+        }
+
     } catch (error) {
         console.log("transactionListByUser--ERROR:: ", error);
         res.status(500).json({

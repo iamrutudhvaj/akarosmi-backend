@@ -53,7 +53,7 @@ exports.edit = async (req, res) => {
         const updateBookData = await Book.updateOne(
             {
                 bookId: BookId,
-                userId: data._id
+                userId: data.uid
             },
             {
                 name: req.body.name,
@@ -121,7 +121,7 @@ exports.bookDelete = async (req, res) => {
 // ---------- User Id list API For Book ---------- //
 exports.listByBookId = async (req, res) => {
     try {
-        const id = req.user.id
+        const id = req.user.uid
         const page = req.query.page;
         const limit = req.query.limit;
 
