@@ -6,8 +6,8 @@ const personSchema = new mongoose.Schema({
         require: true
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        type: String,
+        require: true
     },
     firstName: {
         type: String,

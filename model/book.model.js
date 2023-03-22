@@ -6,8 +6,8 @@ const bookSchema = new mongoose.Schema({
         require: true
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        type: String,
+        require: true
     },
     name: {
         type: String,
@@ -30,7 +30,8 @@ const bookSchema = new mongoose.Schema({
         require: true
     },
     status: {
-        type: String
+        type: String,
+        default: 1 // 1-Available 2-Allocated 3-Away
     }
 }, {
     timestamps: true

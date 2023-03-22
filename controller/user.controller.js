@@ -298,6 +298,7 @@ exports.profileEdit = async (req, res) => {
 }
 // ---------- End Edit Details API For User ---------- //
 
+
 // ---------- Delete Details API For User ---------- //
 exports.deleteUser = async (req, res) => {
     try {
@@ -331,5 +332,4 @@ exports.deleteUser = async (req, res) => {
         })
     }
 }
-
 // ---------- Delete Details API For User ---------- //

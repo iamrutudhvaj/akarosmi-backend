@@ -15,33 +15,23 @@ exports.add = async (req, res) => {
             bookId += chars[nCode];
         }
 
-        const data = req.user;
-        const urls = req.body.image;
-        const status = req.body.status || 1
+        const userId = req.user.uid;
+        const insertData = new Book({
+            bookId: bookId,
+            userId: userId,
+            name: req.body.name,
+            author: req.body.author,
+            publisher: req.body.publisher,
+            images: req.body.image
+        })
+        const saveData = await insertData.save();
 
-        if (status == 1 || status == 2 || status == 3) {
-            const insertData = new Book({
-                bookId: bookId,
-                userId: data._id,
-                name: req.body.name,
-                author: req.body.author,
-                publisher: req.body.publisher,
-                images: urls,
-                status: status
-            })
-            const saveData = await insertData.save();
+        res.status(201).json({
+            message: "BOOK DATA INSERT SUCESSFULLY",
+            status: 201,
+            data: saveData
+        })
 
-            res.status(201).json({
-                message: "BOOK DATA INSERT SUCESSFULLY",
-                status: 201,
-                data: saveData
-            })
-        } else {
-            res.status(400).json({
-                message: "ENTER VALID INPUT",
-                status: 400
-            })
-        }
     } catch (error) {
         console.log("bookAdd-Error:", error);
         res.status(500).json({

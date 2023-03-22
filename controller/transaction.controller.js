@@ -5,58 +5,102 @@ const Person = require("../model/person.model");
 
 exports.insert = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const { bookId, personId } = req.body;
-        const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1, status: 1 });
-        const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 });
+        const userId = req.user.uid;
+        const { bookId, personId, borrowedDate, returnDate } = req.body;
 
-        if (!bookFind) {
-            res.status(401).json({
-                message: "PLEASE ENTER VALID BOOK DETAILS",
-                status: 401
+        const bookFind = await Book.findOne({ bookId: bookId }).select({ bookId: 1 });
+        if (bookFind == null) {
+
+            res.status(404).json({
+                message: "BOOK NOT EXIST",
+                status: 404
             })
+
         } else {
-            if (!personFind) {
-                res.status(401).json({
-                    message: "PLEASE ENTER VALID PERSON DETAILS",
-                    status: 401
+
+            const personFind = await Person.findOne({ personId: personId }).select({ personId: 1 });
+            if (personFind == null) {
+
+                res.status(404).json({
+                    message: "PERSON NOT EXIST",
+                    status: 404
                 })
+
             } else {
-                const { borrowedDate, returnDate } = req.body;
-                if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
-                    res.status(401).json({
-                        message: "PLEASE ENTER ALL FILED",
-                        status: 401
-                    })
-                } else {
-                    var bookStatus = 2
-                    const insertData = new Tranc({
-                        bookId: bookId,
-                        userId: userId,
-                        personId: personId,
-                        borrowedDate: borrowedDate,
-                        returnDate: returnDate,
-                        status: bookStatus
-                    });
-                    const saveData = await insertData.save();
 
-                    const bookStatusUpdate = await Book.findOneAndUpdate({
-                            bookId: bookId
-                        },{
-                            status: bookStatus
-                        },{
-                            new: true
-                        })
+                const insertData = new Tranc({
+                    bookId: bookId,
+                    userId: userId,
+                    personId: personId,
+                    borrowedDate: borrowedDate,
+                    returnDate: returnDate
+                });
+                const saveData = await insertData.save();
 
-                    res.status(201).json({
-                        message: "TRANSACTION COMPLETE",
-                        status: 201,
-                        data: saveData
-                    })
-                }
+                const bookStatusUpdate = await Book.updateOne({
+                    bookId: bookId
+                }, {
+                    status: 2
+                });
+
+                res.status(201).json({
+                    message: "TRANSACTION COMPLETE",
+                    status: 201,
+                    data: saveData
+                })
+
             }
 
         }
+
+
+        // if (!bookFind) {
+        //     res.status(401).json({
+        //         message: "PLEASE ENTER VALID BOOK DETAILS",
+        //         status: 401
+        //     })
+        // } else {
+        //     if (!personFind) {
+        //         res.status(401).json({
+        //             message: "PLEASE ENTER VALID PERSON DETAILS",
+        //             status: 401
+        //         })
+        //     } else {
+        //         const { borrowedDate, returnDate } = req.body;
+        //         if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
+        //             res.status(401).json({
+        //                 message: "PLEASE ENTER ALL FILED",
+        //                 status: 401
+        //             })
+        //         } else {
+        //             var bookStatus = 2
+        //             const insertData = new Tranc({
+        //                 bookId: bookId,
+        //                 userId: userId,
+        //                 personId: personId,
+        //                 borrowedDate: borrowedDate,
+        //                 returnDate: returnDate,
+        //                 status: bookStatus
+        //             });
+        //             const saveData = await insertData.save();
+
+        //             const bookStatusUpdate = await Book.findOneAndUpdate({
+        //                     bookId: bookId
+        //                 },{
+        //                     status: bookStatus
+        //                 },{
+        //                     new: true
+        //                 })
+
+        //             res.status(201).json({
+        //                 message: "TRANSACTION COMPLETE",
+        //                 status: 201,
+        //                 data: saveData
+        //             })
+        //         }
+        //     }
+
+        // }
 
 
     } catch (error) {

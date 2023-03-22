@@ -2,6 +2,7 @@ const Person = require("../model/person.model");
 const User = require("../model/user.model");
 const bcrypt = require("bcrypt");
 
+// ---------- Add Person API For Person ---------- //
 exports.add = async (req, res) => {
     try {
         /* For Generating Unique Code */
@@ -12,40 +13,25 @@ exports.add = async (req, res) => {
             uniqueId += chars[nCode];
         }
 
-        const id = req.user._id
-        const { firstName, lastName, email, reference } = req.body
-        if (firstName.trim().length == 0 || lastName.trim().length == 0 || email.trim().length == 0 || reference.trim().length == 0) {
-            res.status(401).json({
-                message: "PLEASE ENTER ALL FILED",
-                status: 401
-            })
-        } else {
-            const mobileNumber = req.body.mobileNumber
-            if (mobileNumber.length < 10) {
-                res.status(401).json({
-                    message: "PHONE NUMBER MUST BE 10 DIGIT",
-                    status: 401
-                })
-            } else {
-                const insertData = new Person({
-                    personId: uniqueId,
-                    userId: id,
-                    firstName: firstName,
-                    lastName: lastName,
-                    mobileNumber: mobileNumber,
-                    email: email,
-                    reference: reference
-                })
+        const userId = req.user.uid;
+        const { firstName, lastName, email, reference, mobile } = req.body
+        const insertData = new Person({
+            personId: uniqueId,
+            userId: userId,
+            firstName: firstName,
+            lastName: lastName,
+            mobileNumber: mobile,
+            email: email,
+            reference: reference
+        });
+        const saveData = await insertData.save();
 
-                const saveData = await insertData.save();
+        res.status(201).json({
+            message: "PERSON DATA INSERT SUCCESSFULLY",
+            status: 201,
+            data: saveData
+        })
 
-                res.status(201).json({
-                    message: "PERSON DATA INSERT SUCCESSFULLY",
-                    status: 201,
-                    data: saveData
-                })
-            }
-        }
     } catch (error) {
         console.log("personAdd--ERROR:: ", error);
         res.status(500).json({
@@ -56,6 +42,8 @@ exports.add = async (req, res) => {
 };
 // ---------- End Add Person API For Person ---------- //
 
+
+// ---------- Edit Person API For Person ---------- //
 exports.edit = async (req, res) => {
     try {
         const id = req.user._id;
@@ -111,6 +99,8 @@ exports.edit = async (req, res) => {
 };
 // ---------- End Edit Person API For Person ---------- //
 
+
+// ---------- Delete Person API For Person ---------- //
 exports.deleteData = async (req, res) => {
     try {
         const personId = req.params.personId
@@ -146,6 +136,8 @@ exports.deleteData = async (req, res) => {
 };
 // ---------- End Delete Person API For Person ---------- //
 
+
+// ---------- list By User ID API For Person ---------- //
 exports.listByPersonId = async (req, res) => {
     try {
         const id = req.user.id

@@ -6,7 +6,7 @@ const transactionSchema = new mongoose.Schema({
         ref: 'book'
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         require: true
     },
     personId: {
@@ -23,7 +23,7 @@ const transactionSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        require: true
+        default: 2
     }
 }, {
     timestamps: true
