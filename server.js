@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const cors = require("cors")
+const cors = require("cors");
+const cron = require("node-cron");
 require("dotenv").config();
 require("./database/connection");
 
@@ -24,6 +25,13 @@ app.use("/book", bookRouter);
 app.use("/person", personRouter);
 app.use("/transaction", transactionRouter);
 app.use("/asset", aseetRouter);
+
+// ---------- For cron that starts continuously ---------- //
+const { updateStatus } = require("./controller/transaction.controller");
+cron.schedule('*/1 * * * * *', async () => {
+    updateStatus()
+});
+// ---------- End For cron that starts continuously ---------- //
 
 app.listen(port, () => {
     console.log("===============================================");

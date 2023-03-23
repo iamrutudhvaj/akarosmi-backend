@@ -53,56 +53,6 @@ exports.insert = async (req, res) => {
 
         }
 
-
-        // if (!bookFind) {
-        //     res.status(401).json({
-        //         message: "PLEASE ENTER VALID BOOK DETAILS",
-        //         status: 401
-        //     })
-        // } else {
-        //     if (!personFind) {
-        //         res.status(401).json({
-        //             message: "PLEASE ENTER VALID PERSON DETAILS",
-        //             status: 401
-        //         })
-        //     } else {
-        //         const { borrowedDate, returnDate } = req.body;
-        //         if (borrowedDate.trim().length == 0 || returnDate.trim().length == 0) {
-        //             res.status(401).json({
-        //                 message: "PLEASE ENTER ALL FILED",
-        //                 status: 401
-        //             })
-        //         } else {
-        //             var bookStatus = 2
-        //             const insertData = new Tranc({
-        //                 bookId: bookId,
-        //                 userId: userId,
-        //                 personId: personId,
-        //                 borrowedDate: borrowedDate,
-        //                 returnDate: returnDate,
-        //                 status: bookStatus
-        //             });
-        //             const saveData = await insertData.save();
-
-        //             const bookStatusUpdate = await Book.findOneAndUpdate({
-        //                     bookId: bookId
-        //                 },{
-        //                     status: bookStatus
-        //                 },{
-        //                     new: true
-        //                 })
-
-        //             res.status(201).json({
-        //                 message: "TRANSACTION COMPLETE",
-        //                 status: 201,
-        //                 data: saveData
-        //             })
-        //         }
-        //     }
-
-        // }
-
-
     } catch (error) {
         console.log("insert--ERROR:: ", error);
         res.status(500).json({
@@ -299,43 +249,27 @@ exports.listByBookId = async (req, res) => {
 // ----------  updateStatus API For transaction ---------- //
 exports.updateStatus = async (req, res) => {
     try {
-        const id = req.params.id;
 
-        if (id) {
-            const status = req.body.status
-            if (status == 1 || status == 2 || status == 3) {
-                const update = await Tranc.findByIdAndUpdate(
-                    {
-                        _id: id
-                    },
-                    {
-                        $set: {
-                            status: status
-                        }
-                    },
-                    {
-                        new: true
-                    })
-                res.status(200).json({
-                    message: "STATUS UPDATE SUCCESSFULLY",
-                    status: 200,
-                    data: update
-                })
-            } else {
-                res.status(400).json({
-                    message: "ENTER VALID INPUT",
-                    status: 400
-                })
-            }
-        } else {
-            res.status(401).json({
-                message: "DATA NOT FOUND",
-                status: 401
-            })
+        const presentTime = new Date().toISOString().slice(0, 10);
+        console.log('presentTime::--', presentTime);
+
+        const getTransaction = await Tranc.find({ returnDate: presentTime, status: 2 });
+        console.log("getTransaction::", getTransaction);
+
+        for (const respData of getTransaction) {
+            const updateBookStatus = await Tranc.updateOne(
+                {
+                    _id: respData._id
+                },
+                {
+                    status: 3
+                }
+            )
         }
 
+
     } catch (error) {
-        console.log("transactionUpdateStatus--ERROR:: ", error);
+        console.log("updateStatus--ERROR:: ", error);
         res.status(500).json({
             message: "SOMETHING WENT WRONG",
             status: 500
@@ -354,7 +288,7 @@ exports.listByUserId = async (req, res) => {
         const getBook = await Tranc.find({ userId: userId }).limit(limit * 1).skip((page - 1) * limit);
 
         if (getBook.length == 0) {
-            
+
             res.status(404).json({
                 message: "THERE IS NO BOOK DATA IN YOUR LIST",
                 status: 404
@@ -362,32 +296,32 @@ exports.listByUserId = async (req, res) => {
 
         } else {
 
-        const response = [];
-        var bookName = [];
-        var personName = [];
-        for (var findData of getBook) {
-            const findBookName = await Book.findOne({ bookId: findData.bookId }).select('name');
-            const findPersonName = await Person.findOne({ personId: findData.personId }).select('firstName');
-            const respData = {
-                _id: findData._id,
-                bookId: findData.bookId,
-                bookName: findBookName ? findBookName.name : "",
-                personId: findData.personId,
-                personName: findPersonName ? findPersonName.firstName : "",
-                borrowedDate: findData.borrowedDate,
-                returnDate: findData.returnDate,
-                status: findData.status
+            const response = [];
+            var bookName = [];
+            var personName = [];
+            for (var findData of getBook) {
+                const findBookName = await Book.findOne({ bookId: findData.bookId }).select('name');
+                const findPersonName = await Person.findOne({ personId: findData.personId }).select('firstName');
+                const respData = {
+                    _id: findData._id,
+                    bookId: findData.bookId,
+                    bookName: findBookName ? findBookName.name : "",
+                    personId: findData.personId,
+                    personName: findPersonName ? findPersonName.firstName : "",
+                    borrowedDate: findData.borrowedDate,
+                    returnDate: findData.returnDate,
+                    status: findData.status
+                }
+                response.push(respData)
             }
-            response.push(respData)
-        }
 
-        res.status(200).json({
-            message: "GET ALL TRANSACTION BY USER",
-            status: 200,
-            page: page,
-            size: limit,
-            data: response
-        });
+            res.status(200).json({
+                message: "GET ALL TRANSACTION BY USER",
+                status: 200,
+                page: page,
+                size: limit,
+                data: response
+            });
 
         }
 
